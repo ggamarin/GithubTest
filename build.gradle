@@ -1,0 +1,54 @@
+plugins {
+    id 'java'
+    id 'io.qameta.allure' version '2.12.0'
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+def selenideVersion = '7.4.2'
+def junitVersion = '5.10.2'
+def slf4jVersion = '2.0.13'
+def allureJunit5Version = '2.25.0'
+
+dependencies {
+    testImplementation "com.codeborne:selenide:${selenideVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter:${junitVersion}"
+    testImplementation "io.qameta.allure:allure-junit5:${allureJunit5Version}"
+    testImplementation "io.qameta.allure:allure-selenide:${allureJunit5Version}"
+    testRuntimeOnly "org.slf4j:slf4j-simple:${slf4jVersion}"
+}
+
+test {
+    useJUnitPlatform()
+    systemProperty "selenide.browser", System.getProperty("browser", "chrome")
+    systemProperty "selenide.headless", System.getProperty("headless", "true")
+    systemProperty "selenide.timeout", System.getProperty("timeout", "7000")
+    systemProperty "selenide.reportsFolder", "build/selenide-reports"
+    systemProperty "selenide.downloadsFolder", "build/downloads"
+}
+
+allure {
+    adapter {
+        frameworks {
+            junit5 {
+                enabled = true
+            }
+        }
+        autoconfigure = true
+        aspectjWeaver = true
+    }
+    report {
+        version = '2.29.0'
+    }
+    commandline {
+        version = '2.29.0'
+    }
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+}
